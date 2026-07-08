@@ -24,3 +24,13 @@ defect without resolving it are a **blocker**:
 - Beyond bug fixes, check ordinary correctness: off-by-one and boundary errors, unhandled
   promise rejections / missing `await`, swallowed errors, incorrect null/undefined handling,
   and edge cases the change introduces.
+- **Check the twin path.** Bruno keeps parallel implementations of the same behavior — `.bru`
+  vs `.yml` serializers, the default app-data workspace vs custom-filesystem workspaces. A
+  change that touches one path must be verified against its twin; behavior that diverges
+  between them (a value that persists or defaults in one but is dropped or defaulted
+  differently in the other) is a bug, not two independent features.
+- **`x || default` on a field whose absence is meaningful.** When "not set" / "never
+  configured" is a distinct state, falsy-coalescing (`version || '1'`) fabricates a value for
+  the unset case, erases the distinction, and often diverges from a sibling path that handles
+  it correctly. Flag it; use `??` or an explicit `undefined` check when the unset state must
+  survive.

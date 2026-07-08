@@ -19,18 +19,36 @@ merge and report their findings.
 
 ## How to review (orchestration)
 
-1. **Get the diff.** Review only what changed against the base branch (`main` or
-   `release/*`): `git diff main...HEAD` (or the staged/working diff if asked). Don't
-   review untouched code. Note the exact diff range — you'll hand it to every reviewer
-   so they all look at the same changes.
-2. **Enumerate changed files** (`git diff --name-only main...HEAD`). Use this to skip
-   any lens whose file scope isn't touched (e.g. no `packages/bruno-app/**` change →
-   skip `react.md`; no `tests/**` change → skip `e2e-tests.md`). Never skip the lenses
-   scoped to all files.
+1. **Get the diff.** Review only what changed — never untouched code. Pick the mode:
+   - **Committed range** (default): `git diff main...HEAD` against the base branch
+     (`main` or `release/*`). Update the base first (`git fetch` and confirm the local
+     base is current) — a stale base inflates the diff with already-merged, unrelated
+     changes and wastes a full fan-out. Each reviewer re-runs this scoped to its own
+     globs; since the range is pinned to fixed commits they all see identical bytes, so
+     there's no need to snapshot.
+   - **Working tree / uncommitted changes** (when asked to review unstaged or staged
+     work): the tree can shift mid-review, so re-running `git diff` per reviewer risks
+     each seeing a different snapshot. Instead, capture the diff **once** to a scratch
+     file and hand every reviewer that path. `git diff HEAD` covers staged + unstaged
+     tracked changes; run `git add -N .` first (reversible with `git reset`) so any new
+     untracked files also show up:
+     ```bash
+     git add -N . && git diff HEAD > "$SCRATCH/review.diff"
+     ```
+     `$SCRATCH` is your environment's scratchpad dir. Reviewers read this frozen diff for
+     their globs plus the on-disk files for surrounding context — the working-tree files
+     already hold the uncommitted state.
+2. **Enumerate changed files** — `git diff --name-only main...HEAD` (committed range) or
+   `git diff --name-only HEAD` (working tree). Use this to skip any lens whose file scope
+   isn't touched (e.g. no `packages/bruno-app/**` change → skip `react.md`; no `tests/**`
+   change → skip `e2e-tests.md`). Never skip the lenses scoped to all files.
 3. **Fan out the reviewers in parallel.** In a *single message*, launch one `Agent`
    (subagent_type `Explore` or `general-purpose`) per in-scope reviewer below. Give each
    subagent this exact briefing:
-   - The diff range and the file globs it owns (from the reviewer file's "Scope" line).
+   - The diff source — the committed range (e.g. `main...HEAD`) or the snapshot file path
+     (`$SCRATCH/review.diff`) — and the file globs it owns (from the reviewer file's
+     "Scope" line). For a snapshot, tell the reviewer to read that file for its globs
+     rather than re-run `git diff`.
    - "Read `.claude/skills/code-review/SKILL.md` for the shared persona and output
      contract, then read `.claude/skills/code-review/reviewers/<file>` — and any rule or
      source file it points to (e.g. `CODING_STANDARDS.md`, `.claude/rules/*.md`), which hold
@@ -41,7 +59,10 @@ merge and report their findings.
 4. **Merge and report.** Collect every reviewer's findings, drop exact duplicates, and
    when two lenses flag the same `file:line` keep the higher severity. Regroup **by
    file**, each finding tagged by severity (blocker / suggestion / nit) with `file:line`.
-   If nothing's wrong, say so briefly — don't manufacture nits.
+   If the review request carries a problem statement or acceptance criteria (e.g. passed
+   as args), reconcile its enumerated deliverables — docs, migration notes, a test per new
+   default/branch — against the diff and flag any that are absent. If nothing's wrong, say
+   so briefly — don't manufacture nits.
 
 ## Reviewers
 
@@ -61,7 +82,11 @@ Each file is a self-contained checklist for one lens:
 
 Every reviewer adopts this persona (`tone_instructions`): an expert reviewer in
 TypeScript, JavaScript, Node.js, and Electron on an enterprise team. Be **concise** —
-one clear sentence per finding; elaborate only when asked.
+one clear sentence per finding; elaborate only when asked. Review to the project's
+standard regardless of who authored or requested the change — never soften severity for
+assumed intent or seniority. Ground every finding in the actual code: trust the repo over
+any doc, guide, or comment when they disagree, and never cite a line or invent an example
+value you haven't verified in source.
 
 Each reviewer returns a flat list, one finding per line, in this shape:
 

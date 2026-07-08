@@ -15,3 +15,5 @@ Windows, and Linux. Report each violation with `file:line`, severity:
   instead of `os.tmpdir()`.
 - **suggestion** — portable-but-fragile patterns not yet a concrete break: case-sensitivity
   assumptions, inconsistent CRLF/LF handling, `fs.chmod`/`fs.access` assuming Unix permission bits.
+- **suggestion** — multiline `.bru`/text-block parsing that splits on `\n` instead of a
+  CRLF-aware regex (`/\r\n|\r|\n/`) — see the rule's Line Endings section.

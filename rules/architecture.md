@@ -8,6 +8,29 @@ paths:
 Reference for the request pipeline, IPC / store / serialization internals, the core data-model
 types, and dependency versions.
 
+## Monorepo Structure (npm workspaces)
+
+```
+packages/
+  bruno-app/          React renderer (rsbuild, Redux, styled-components)
+  bruno-electron/     Electron main process (electron-builder)
+  bruno-js/           JS sandbox for user scripts
+  bruno-common/       Shared utilities (rollup)
+  bruno-converters/   Format conversion (Postman, Insomnia, etc.)
+  bruno-requests/     HTTP request execution engine (rollup)
+  bruno-filestore/    .bru/.yml file serialization (rollup)
+  bruno-query/        JSONPath query engine (rollup)
+  bruno-lang/         Bruno DSL parser
+  bruno-schema/       Collection/request schema validation
+  bruno-schema-types/ TypeScript type definitions
+  bruno-graphql-docs/ GraphQL documentation generator
+  bruno-toml/         TOML parser
+  bruno-cli/          Command-line runner
+  bruno-tests/        Test servers (express: HTTP/HTTPS/proxy/GraphQL)
+tests/                Playwright e2e tests
+playwright/           Test fixtures and helpers (index.ts)
+```
+
 ## Electron IPC Pattern
 
 - **Main process entry**: `packages/bruno-electron/src/index.js`

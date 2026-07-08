@@ -16,3 +16,10 @@ touch the store, also consult **`.claude/rules/redux-store.md`**. Report violati
 - **suggestion** — a missing memo that breaks a dependency array or re-renders a heavy child, or
   a gratuitous memo wrapping a cheap primitive; Tailwind used for colors (layout only);
   a testable element without `data-testid`; misplaced component-specific vs shared utilities.
+- **suggestion** — a new `EditableTable` column that omits the `readOnly`/`editMode` gating its
+  sibling columns carry (`readOnly={column.readOnly}` at render): the field stays editable in
+  view / read-only mode even though the change handler discards the edit.
+- **suggestion** — optimistic success state (`copied`, `saved`, `done`) set unconditionally
+  rather than gated on the operation resolving — e.g. `copied = true` after an optional-chained
+  `navigator.clipboard?.writeText` that no-ops in an insecure context — showing a false
+  confirmation.

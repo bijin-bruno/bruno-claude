@@ -27,6 +27,10 @@ This is an Electron app targeting macOS, Windows, and Linux. All code touching t
 - `SIGINT` / `SIGTERM` are unreliable on Windows with `shell: true`. Also handle `SIGHUP` as fallback.
 - App shutdown must close all file watchers. Each watcher class implements `closeAllWatchers()`, orchestrated by `closeAllWatchers()` in `index.js`.
 
+## Line Endings
+
+- Files authored on Windows use CRLF. When parsing multiline `.bru`/text blocks line by line, split with a CRLF-aware regex (`/\r\n|\r|\n/`), never on `\n` alone — a trailing `\r` otherwise leaks into parsed values and causes spurious dirty-state and diffs. the `.split(/\r\n|\r|\n/)` in `bruno-lang`'s `v2/src/envToJson.js` is the reference pattern; keep new parsers consistent with it.
+
 ## stdout vs stderr
 
 - Dev tools (rsbuild, webpack, electron-builder) may route startup output to stderr on Windows. When detecting patterns in process output, check both streams.

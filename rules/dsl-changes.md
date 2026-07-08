@@ -53,12 +53,36 @@ current meaning.
 never drop fields it doesn't recognize. A file written by a newer version, opened and
 re-saved by an older one, must not lose the newer fields.
 
+**Prove escaping on the written bytes, not in memory.** When a value is embedded in a
+delimited block (`.bru` multiline `'''…'''`, annotation args), an in-memory `escape`/`unescape`
+round-trip can pass while the on-disk file still corrupts — the parser terminates at the first
+re-introduced delimiter. Test `parse(read(serialize(x)))` on the actual bytes, and fuzz across
+quote/backslash runs. Escape at single-character granularity: escaping a multi-character
+delimiter by splitting on the whole delimiter (`split("'''")`) leaves fragments that recombine
+on runs of length ≥ the delimiter; escape the backslash first, then every single delimiter char.
+
+**New syntax breaks older parsers — not just older fields.** The additive-and-optional rule
+protects field-level compat, but adding new `.bru` *syntax* (a new escape form, block delimiter,
+or annotation grammar) makes files written by the new version fail to *parse* in older versions,
+which have no handling for it. This is a forward-compat break beyond field loss; it needs an
+explicit decision and a compatibility path before shipping.
+
+**Descriptions are string-only internally.** Every `description` field (headers, params,
+assertions, variables, body entries, ...) is stored as a plain `string`. Parsers accept a bare
+string *or* a legacy `{ content }` object on read and normalize to the string; writers emit a
+string. This read-accepts-object / write-emits-string asymmetry is an established convention
+across all description fields — it is not a lossy round-trip. New description-like fields should
+follow the same string-only shape.
+
 **Keep both formats in lockstep.** Any field added or changed must be handled in *both*
 `bru` and `yml` — parse and stringify on each side — or the same collection behaves
-differently depending on its format. Update every layer the field touches:
-`bruno-schema-types` (types), `bruno-schema` (Yup validation), `bruno-filestore` (both
-formats), `bruno-converters` (import/export), and the grammar in `bruno-lang` if `.bru`
-syntax itself changes.
+differently depending on its format. Pay attention to the *unset* case: a field that
+defaults or persists one way in `.bru` and another in `.yml` (e.g. one path returns `''`,
+the other `'1'`) is a divergence bug. The default app-data workspace and custom-filesystem
+workspaces are a second such twin — a value that persists in one but is silently dropped in
+the other is the same class of bug. Update every layer the field touches: `bruno-schema-types`
+(types), `bruno-schema` (Yup validation), `bruno-filestore` (both formats), `bruno-converters`
+(import/export), and the grammar in `bruno-lang` if `.bru` syntax itself changes.
 
 **When a shape must change, migrate on read — never make users edit files.** Add a
 read-time compatibility shim that upgrades the old shape as it is parsed, following the
@@ -89,5 +113,8 @@ The `*.spec.ts` files next to each format serializer in `bruno-filestore` are th
 - [ ] Handled in both `bru` and `yml`, parse **and** stringify
 - [ ] Types (`bruno-schema-types`), Yup schema (`bruno-schema`), and converters updated
 - [ ] Old files still parse — read-time compat shim added if the shape changed
+- [ ] No new `.bru` syntax that older parsers can't read (or a forward-compat path decided)
+- [ ] Any new escaping proven via on-disk reparse + fuzz, escaping single chars not the delimiter
+- [ ] `bru`/`yml` (and default vs custom workspace) behave identically, including the unset case
 - [ ] Round-trip + old-format fixture tests added
 - [ ] Naming/structure consistent with existing blocks and scalable
