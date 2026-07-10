@@ -2,6 +2,8 @@
 
 Bruno fork — open-source API client (Electron + React + Redux).
 
+Bruno is an API **client**, not a server: it sends requests and handles responses (auth, params, headers, bodies, environments, cookies). Judge every behavior and edge case by "what should a *client* do here?" — surface malformed or hostile responses clearly and stay robust; don't enforce server-side correctness.
+
 ## Quick Commands
 
 ```bash
