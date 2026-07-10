@@ -3,7 +3,7 @@
 **Scope:** all changed source (`**/*`, excluding `tests/**`).
 
 Adopt the reviewer persona and return findings in the output contract defined in
-`../SKILL.md`.
+`_contract.md`.
 
 Validate that the change is correct and, for every bug fix, that it addresses the
 underlying problem rather than the visible symptom. Surface-level patches that mask a

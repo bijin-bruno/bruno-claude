@@ -3,7 +3,7 @@
 **Scope:** `packages/bruno-app/**`.
 
 Adopt the reviewer persona and return findings in the output contract defined in
-`../SKILL.md`.
+`_contract.md`.
 
 Review changed components against **`CODING_STANDARDS.md` §React** (read it); for changes that
 touch the store, also consult **`.claude/rules/redux-store.md`**. Report violations with

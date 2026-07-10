@@ -3,7 +3,7 @@
 **Scope:** all changed source (`**/*`, excluding `tests/**`).
 
 Adopt the reviewer persona and return findings in the output contract defined in
-`../SKILL.md`.
+`_contract.md`.
 
 Bruno is an offline API client that handles user credentials, tokens, and runs
 user-authored scripts in a sandbox. Review changes for these Bruno-specific risks:

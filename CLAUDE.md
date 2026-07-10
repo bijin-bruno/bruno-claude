@@ -72,7 +72,7 @@ indexed under **Detailed Rules** below.
 
 - 2 spaces, single quotes, semicolons; **no trailing commas**; always parenthesize arrow params `(x) =>`; JSX/TSX attrs use double quotes.
 - React: avoid `useEffect` (prefer derived state / custom hooks); import hooks by name, never `React.useX`; a component is controlled XOR uncontrolled; Tailwind for layout, styled-components `theme` for colors.
-- Don't abstract until used in 1+ places. Add `data-testid` attributes for Playwright selectors.
+- Extract for readability or clear reuse when it helps; avoid only unnecessary abstraction (indirection with no payoff). Add `data-testid` attributes for Playwright selectors.
 
 ## Detailed Rules (`.claude/rules/`)
 

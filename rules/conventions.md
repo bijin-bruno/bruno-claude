@@ -23,10 +23,12 @@ can't mechanically repair still warrant attention.
 
 - **Descriptive names.** Functions and variables carry concise, descriptive names; an unclear or
   misleading name is worth raising even when the code is otherwise correct.
-- **Premature abstraction.** Don't extract a shared abstraction until the same code appears in more
-  than three places — an abstraction pulled out for one or two call sites adds indirection without
-  earning reuse. This targets *reuse* abstraction only: breaking a long, complex function into a
-  few well-named local helpers purely for readability is encouraged, not a violation.
+- **Extraction & abstraction.** Extract a helper or shared abstraction whenever it genuinely
+  improves readability or serves a clear, anticipated reuse — this is encouraged and not gated on a
+  minimum number of call sites; suggest it where it would help. Avoid only *unnecessary* abstraction:
+  a layer that adds indirection without improving clarity or earning reuse — a generalized utility
+  built for a single site with no foreseeable second user, or options/config added "for later."
+  Breaking a long, complex function into well-named local helpers for readability is always fine.
 - **Single-line indirection.** A one-line function that only forwards to another — adding a stack
   frame without adding meaning — should be inlined.
 - **Optional chaining.** `?.` belongs only where the null case is handled right there (a fallback,

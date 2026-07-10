@@ -3,7 +3,7 @@
 **Scope:** files under `tests/**` (`path: 'tests/**/**.*'`).
 
 Adopt the reviewer persona and return findings in the output contract defined in
-`../SKILL.md`.
+`_contract.md`.
 
 Review the diff against **`.claude/rules/testing.md`** and the e2e checklist in
 **`.coderabbit.yaml`** (read both). Report violations with `file:line`, severity:

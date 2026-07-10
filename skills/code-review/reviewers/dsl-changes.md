@@ -2,13 +2,13 @@
 
 **Scope:** `packages/bruno-app/**`, `packages/bruno-electron/**`, `packages/bruno-cli/**`,
 `packages/bruno-lang/**`, `packages/bruno-filestore/**`, `packages/bruno-schema/**`,
-`packages/bruno-schema-types/**`, `packages/bruno-converters/**`, `packages/bruno-toml/**`.
+`packages/bruno-schema-types/**`, `packages/bruno-converters/**`.
 The format packages own serialization, but DSL objects are assembled in `bruno-app` (Redux)
 and `bruno-electron` (IPC), and `bruno-cli` reads/writes these files directly — a shape change
 made there won't be caught by the serialization layer, so they're all in scope.
 
 Adopt the reviewer persona and return findings in the output contract defined in
-`../SKILL.md`.
+`_contract.md`.
 
 Review the diff against **`.claude/rules/dsl-changes.md`** (read it) — Bruno persists
 collections/requests/environments/config as `.bru` and `.yml` files read across app versions, so

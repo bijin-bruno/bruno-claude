@@ -86,6 +86,22 @@ Improvements to the rules and skills are welcome. A few conventions the config f
   codebase for the current set (slices, helpers, handlers) rather than listing items that drift.
 - **Verify against real code.** Every rule/example should reflect the actual repo, not assumptions.
 
+## Where things go
+
+- **`rules/*.md`** — engineering rules, scoped by their `paths:` frontmatter (not by file
+  location). Cross-cutting rules (`conventions`, `ai-hygiene`, `architecture`, `cross-platform`)
+  stay at the top level; domain rules cover **app** (`redux-store`), **electron** (`electron-ipc`),
+  **packages / DSL** (`dsl-changes`), and **testing** (`testing`). Add a new rule as a flat file
+  with correct `paths:`; only split a domain into a subfolder once it has several rules (and first
+  confirm the rule loader recurses into subdirectories).
+- **`skills/<name>/`** — a `SKILL.md` orchestrator plus its own support files (e.g. `reviewers/`,
+  and future `scripts/`). The shared review persona and output shape live once in
+  `skills/code-review/reviewers/_contract.md`; reviewer lenses and `SKILL.md` point to it.
+- **`settings.json`** — team-wide permissions/hooks (committed). **`settings.local.json`** —
+  personal, machine-specific overrides (gitignored).
+- **Source of truth:** coding standards → `CODING_STANDARDS.md`; architecture/behavior →
+  `rules/*`; e2e → `docs/playwright-testing-guide.md`. `.coderabbit.yaml` mirrors these for CI.
+
 ## License
 
 MIT — see [`LICENSE`](LICENSE).

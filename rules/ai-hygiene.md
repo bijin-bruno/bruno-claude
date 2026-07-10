@@ -28,8 +28,9 @@ task or session that produced them. Applies to every change. See also `CODING_ST
 
 ## Beyond comments
 
-- Don't add speculative abstractions, options, or configuration "for later" — build only what the
-  change needs (the 3-use rule in `CODING_STANDARDS.md`).
+- Don't add speculative options, parameters, or configuration "for later" that nothing in the change
+  uses — build for the actual need. Extracting a helper for readability or clear, foreseeable reuse is
+  fine (see `conventions.md`).
 - Match the surrounding code's style and naming so a change is indistinguishable from the existing
   codebase, not visibly bolted on.
 - Keep diffs minimal — no unrelated reformatting or whitespace churn.

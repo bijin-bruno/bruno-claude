@@ -9,8 +9,9 @@ description: Review a Bruno diff the way CodeRabbit does, fanning out focused re
 # Reviewing Bruno code
 
 This skill mirrors the automated CodeRabbit review (`.coderabbit.yaml`) so you can run
-the same review locally. Treat `.coderabbit.yaml` as the source of truth — read it for
-any path instruction not summarized here, and prefer it if the two ever disagree.
+the same review locally. Source-of-truth order: coding standards → `CODING_STANDARDS.md`;
+architecture/behavior → `.claude/rules/*`. `.coderabbit.yaml` mirrors these for CI parity —
+read it for a path instruction not summarized here, but the rules win if they ever disagree.
 
 The review is **split into focused lenses that run in parallel**, so a large diff is
 covered faster and each reviewer stays sharply scoped to one concern. Each lens lives in
@@ -49,11 +50,11 @@ merge and report their findings.
      (`$SCRATCH/review.diff`) — and the file globs it owns (from the reviewer file's
      "Scope" line). For a snapshot, tell the reviewer to read that file for its globs
      rather than re-run `git diff`.
-   - "Read `.claude/skills/code-review/SKILL.md` for the shared persona and output
-     contract, then read `.claude/skills/code-review/reviewers/<file>` — and any rule or
-     source file it points to (e.g. `CODING_STANDARDS.md`, `.claude/rules/*.md`), which hold
-     the detailed checklist. Apply **only** that lens to the changed files in your scope, at
-     the severities the reviewer specifies. Do not review outside your scope."
+   - "Read `.claude/skills/code-review/reviewers/_contract.md` for the shared persona and
+     output contract, then read `.claude/skills/code-review/reviewers/<file>` — and any rule
+     or source file it points to (e.g. `CODING_STANDARDS.md`, `.claude/rules/*.md`), which
+     hold the detailed checklist. Apply **only** that lens to the changed files in your
+     scope, at the severities the reviewer specifies. Do not review outside your scope."
    Reviewers are read-only and independent — they don't coordinate, and overlap between
    lenses is fine (you dedupe at merge time).
 4. **Merge and report.** Collect every reviewer's findings, drop exact duplicates, and
@@ -71,28 +72,17 @@ Each file is a self-contained checklist for one lens:
 | Reviewer file | Lens | Scope |
 |---|---|---|
 | `reviewers/correctness.md` | Correctness & root-cause | all source (excl. `tests/**`) |
+| `reviewers/architecture.md` | Architecture & dependency boundaries | `packages/**` |
 | `reviewers/conventions.md` | Coding standards & readability | all files |
 | `reviewers/react.md` | React — app files | `packages/bruno-app/**` |
 | `reviewers/cross-platform.md` | Cross-platform (macOS/Windows/Linux) | all files |
 | `reviewers/security.md` | Security & data safety | all source (excl. `tests/**`) |
-| `reviewers/dsl-changes.md` | On-disk DSL & serialization (backward compat) | `bruno-app`, `bruno-electron`, `bruno-cli`, `bruno-lang`, `bruno-filestore`, `bruno-schema(-types)`, `bruno-converters`, `bruno-toml` |
+| `reviewers/dsl-changes.md` | On-disk DSL & serialization (backward compat) | `bruno-app`, `bruno-electron`, `bruno-cli`, `bruno-lang`, `bruno-filestore`, `bruno-schema(-types)`, `bruno-converters` |
 | `reviewers/e2e-tests.md` | Playwright E2E tests | `tests/**` |
 
 ## Shared reviewer persona & output contract
 
-Every reviewer adopts this persona (`tone_instructions`): an expert reviewer in
-TypeScript, JavaScript, Node.js, and Electron on an enterprise team. Be **concise** —
-one clear sentence per finding; elaborate only when asked. Review to the project's
-standard regardless of who authored or requested the change — never soften severity for
-assumed intent or seniority. Ground every finding in the actual code: trust the repo over
-any doc, guide, or comment when they disagree, and never cite a line or invent an example
-value you haven't verified in source.
-
-Each reviewer returns a flat list, one finding per line, in this shape:
-
-```
-<blocker|suggestion|nit> | <file>:<line> | <one-sentence finding>
-```
-
-Return `no findings` (nothing else) when the scope is clean. Never invent nits to fill
-the list.
+Defined once in `reviewers/_contract.md` — the small file every reviewer reads (dispatched
+reviewers read it, not this orchestration file). Keep the persona and the
+`<blocker|suggestion|nit> | <file>:<line> | <finding>` output shape there, not duplicated here,
+so a change updates a single place.
