@@ -78,5 +78,6 @@ Read these before non-trivial work in the relevant area:
 `electron-ipc.md` (IPC handlers + startup sequence), `redux-store.md` (slices/middleware),
 `testing.md` (e2e patterns & gotchas), `cross-platform.md` (Windows file/process/path pitfalls),
 `dsl-changes.md` (on-disk `.bru`/`.yml` format & backward compatibility),
+`conventions.md` (coding-standards & readability review lens),
 `ai-hygiene.md` (comment & code cleanliness — no situational/obvious comments).
 Architecture, core types, and dependency versions live in `architecture.md` (on-demand reference).
