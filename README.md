@@ -18,7 +18,7 @@ Bruno checkout and Claude picks it up automatically.
 | `skills/code-review/` | `/code-review` — reviews the current branch/PR via focused lenses in parallel; takes base pointers from `.coderabbit.yaml`. | On invocation / when relevant. |
 | `skills/write-e2e-test/` | `/write-e2e-test` — writes a Playwright E2E test following Bruno's fixtures and conventions. | On invocation / when relevant. |
 | `skills/release/` | `/release` — publish `@usebruno/*` npm packages / cut a desktop release. Manual only, side-effectful. | Manual (`/release`) — `disable-model-invocation`. |
-| `settings.json` | Shared project settings (permissions, env), checked in for the team. Empty by default. | At startup, from the launch directory. |
+| `settings.json` | Shared project settings, checked in for the team. Denies `Read` on `**/dist/**` so Claude works from `src/`, not generated bundles. | At startup, from the launch directory. |
 | `settings.local.json` | Your machine-specific overrides. Gitignored — never committed. | At startup, if present. |
 
 ## Requirements
@@ -127,6 +127,13 @@ maintained place.
   or a skill instead.
 - Team-wide requirements belong in these committed files, **not** only in Claude's auto memory
   (`~/.claude/projects/.../memory/`), which is machine-local and unshared.
+- **`Read`-deny rules are for build output, not dependencies.** `settings.json` denies
+  `Read(./**/dist/**)` so Claude edits `src/`, never the generated bundles the app consumes.
+  `node_modules/` is deliberately *not* denied — `.gitignore` already keeps it (and `dist/`) out of
+  search, and reading a dependency's source or `@types` is legitimate maintenance. Don't add deny
+  rules for gitignored paths just to keep them out of search; that's already handled. Note
+  `settings.json` loads only from the launch directory, so this deny applies on a root launch, not
+  when starting inside a package.
 
 ### Validate a change
 
