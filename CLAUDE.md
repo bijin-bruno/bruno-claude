@@ -9,17 +9,12 @@ Bruno is an API **client**, not a server: it sends requests and handles response
 ```bash
 npm run dev              # Run electron + react concurrently
 npm run dev:watch        # Same, with hot-reload of the electron main process
-npm run dev:web          # React dev server only (port 3000)
-npm run dev:electron     # Electron only (needs dev:web running)
-npm run dev:electron:debug  # Electron main with debugger attached
 npm run storybook        # Component dev (bruno-app)
-npm run test:e2e         # Playwright e2e (default + system-pac projects)
-npm test --workspaces    # Unit tests (Jest) across all packages
 npm run lint:fix         # ESLint fix
-npm run build:electron   # Production build (add :mac/:win/:linux)
+npm test --workspaces    # Unit tests (Jest) across all packages
 ```
 
-Setup: `nvm use && npm i --legacy-peer-deps && npm run setup` (Node **v22.12.0**, see `.nvmrc`).
+Full script list: root `package.json`. Setup: `nvm use && npm i --legacy-peer-deps && npm run setup` (Node **v22.12.0**, see `.nvmrc`).
 
 ### Running a single test
 
@@ -33,7 +28,7 @@ npx playwright test tests/collection/create-collection.spec.ts --project=default
 npx playwright test --project=default -g "test name pattern"
 ```
 
-Other e2e projects: `test:e2e:ssl`, `test:e2e:auth`, `test:e2e:secrets-manager` (60s timeout).
+Prefer the smallest scope — one workspace, one spec — over `--workspaces` or the full e2e run.
 
 ### Building shared packages
 
@@ -46,19 +41,11 @@ npm run build:bruno-common      # also :bruno-requests, :bruno-filestore, etc.
 npm run watch:common            # also watch:requests, watch:converters
 ```
 
-## Monorepo Structure (npm workspaces)
-
-Packages live under `packages/`, with top-level `tests/` and `playwright/`. Full package map
-with per-package descriptions: `.claude/rules/architecture.md`.
-
 ## Key Architecture
 
 - **Main process entry**: `packages/bruno-electron/src/index.js`
 - **Renderer + Redux store**: `packages/bruno-app/src/providers/ReduxStore/`
-
-Internals — request pipeline, IPC startup, stores, file watchers, slices/middleware, file
-format, sandbox, core types, and dependency versions — live in the `.claude/rules/` files
-indexed under **Detailed Rules** below.
+- Packages live under `packages/`, with top-level `tests/` and `playwright/`.
 
 ## Testing
 
@@ -68,18 +55,21 @@ indexed under **Detailed Rules** below.
 
 ## Coding Standards
 
-**Source of truth: `CODING_STANDARDS.md`** — read it for the full list. Highest-signal rules:
+Full list: `CODING_STANDARDS.md`. Mechanical style (indent, quotes, semicolons, no trailing
+commas, arrow-param parens) is ESLint-enforced — run `npm run lint:fix`, don't hand-police it.
+Non-obvious project rules worth holding:
 
-- 2 spaces, single quotes, semicolons; **no trailing commas**; always parenthesize arrow params `(x) =>`; JSX/TSX attrs use double quotes.
 - React: avoid `useEffect` (prefer derived state / custom hooks); import hooks by name, never `React.useX`; a component is controlled XOR uncontrolled; Tailwind for layout, styled-components `theme` for colors.
-- Extract for readability or clear reuse when it helps; avoid only unnecessary abstraction (indirection with no payoff). Add `data-testid` attributes for Playwright selectors.
+- Extract for readability or clear reuse; avoid only indirection that adds no payoff. Add `data-testid` attributes for Playwright selectors.
 
-## Detailed Rules (`.claude/rules/`)
+## Detailed rules & references
 
-Read these before non-trivial work in the relevant area:
-`electron-ipc.md` (IPC handlers + startup sequence), `redux-store.md` (slices/middleware),
-`testing.md` (e2e patterns & gotchas), `cross-platform.md` (Windows file/process/path pitfalls),
-`dsl-changes.md` (on-disk `.bru`/`.yml` format & backward compatibility),
-`conventions.md` (coding-standards & readability review lens),
-`ai-hygiene.md` (comment & code cleanliness — no situational/obvious comments).
-Architecture, core types, and dependency versions live in `architecture.md` (on-demand reference).
+Path-scoped rules in `.claude/rules/` auto-attach when you touch matching files:
+`architecture.md` (`@usebruno/*` dependency boundaries), `electron-ipc.md` (IPC handlers + startup),
+`redux-store.md` (slices/middleware), `testing.md` (e2e patterns & gotchas), `cross-platform.md`
+(Windows file/process/path pitfalls), `dsl-changes.md` (on-disk `.bru`/`.yml` format & backward
+compat), `conventions.md` (readability + comment/diff hygiene).
+
+Read on demand (not auto-loaded): `.claude/reference/architecture.md` — the monorepo map, request
+pipeline, sandbox, core types, and dependency versions. Consult it before cross-package or
+architectural work.

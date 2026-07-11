@@ -42,7 +42,9 @@ layer — in `bruno-electron` (IPC handlers) or `bruno-app` (Redux) — and hand
 change can originate in *any* package on the data path, not just the format packages. Treat
 this rule as in scope for changes anywhere the collection/request/environment/config object
 is built, mutated, or serialized — the serialization packages plus `bruno-app`,
-`bruno-electron`, and `bruno-cli`, where these objects are assembled or read/written.
+`bruno-electron`, and `bruno-cli`, where these objects are assembled or read/written. Adding a
+persisted field in app/electron without wiring it through `bruno-filestore` (both formats) and
+`bruno-schema` silently drops or rejects data on save — the exact bug this rule guards against.
 
 ## Rules
 

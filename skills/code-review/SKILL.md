@@ -1,9 +1,8 @@
 ---
 name: code-review
-description: Review a Bruno diff the way CodeRabbit does, fanning out focused reviewers
-  in parallel. Use when asked to review changes, a PR, or the current branch before
-  pushing. Extends the review instructions in .coderabbit.yaml with the project's
-  coding standards.
+description: Review a Bruno diff, PR, or branch via focused reviewers run in parallel —
+  correctness, security, DSL, React, cross-platform, tests. Mirrors the CodeRabbit /
+  CODING_STANDARDS review.
 ---
 
 # Reviewing Bruno code

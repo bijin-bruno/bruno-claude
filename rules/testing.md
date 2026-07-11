@@ -3,8 +3,6 @@ paths:
   - "tests/**/*"
   - "playwright/**/*"
   - "playwright.config.ts"
-  - "playwright-report/**/*"
-  - "test-results/**/*"
 ---
 
 # Playwright E2E Testing Guide
@@ -14,14 +12,16 @@ paths:
 ## Running Tests
 
 ```bash
-npm run test:e2e                           # All tests (starts dev servers automatically)
+npm run test:e2e                           # default + system-pac projects (starts dev servers automatically)
 npx playwright test tests/request/         # Run specific directory
 npx playwright test --project=default      # Run specific project
 npx playwright test --headed               # Watch mode
 ```
 
-Projects: `default` (main), `ssl`, `auth`, `secrets-manager` (60s timeout).
-Config: `playwright.config.ts` — sequential, 1 worker local / 3 CI, retries 0 local / 2 CI.
+Projects: `default` (main), `system-pac` (depends on `default`), `auth`, `ssl`, `secrets-manager`
+(60s timeout). `npm run test:e2e` runs `default` + `system-pac`; the rest have their own
+`test:e2e:*` scripts. Config: `playwright.config.ts` — `fullyParallel: true`, `workers` unset
+(Playwright default, not single-worker), retries 0 local / 2 CI.
 
 ## Test Fixtures (playwright/index.ts)
 

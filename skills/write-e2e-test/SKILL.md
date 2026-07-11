@@ -11,7 +11,8 @@ Read `.claude/rules/testing.md` first for the full fixture and helper reference.
 `docs/playwright-testing-guide.md` for the extended walkthrough (codegen, running,
 debugging, troubleshooting) — but where it disagrees with this skill or the actual repo,
 trust the repo: specs live in `tests/` (not `e2e-tests/`), the suite is `fullyParallel`,
-and projects are `default` / `auth` / `ssl` / `system-pac`.
+and projects are `default`, `system-pac`, `auth`, `ssl`, and `secrets-manager`
+(verify in `playwright.config.ts`).
 
 ## Start with codegen or by hand
 
@@ -26,7 +27,8 @@ and projects are `default` / `auth` / `ssl` / `system-pac`.
 1. **Place the spec** at `tests/<area>/<name>.spec.ts` — reuse an existing area dir under
    `tests/` (list it for the current set; e.g. `request/`, `collection/`, `environments/`,
    `runner/`, `scripting/`) or add one. Pick the project: `default` for most specs;
-   `auth` / `ssl` / `system-pac` only when the test needs those servers.
+   `auth` / `ssl` / `system-pac` / `secrets-manager` only when the test needs those
+   servers or external dependencies.
 2. **Use fixtures** from `playwright/index.ts` (read it for the full set) instead of launching
    the app yourself:
    - `page` / `electronApp` — default app with onboarding skipped.
